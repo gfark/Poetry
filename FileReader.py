@@ -144,7 +144,7 @@ class FileReader:
         
         return freq
 
-    
+
     
     def dict_has_word(self, word: str):
         """Checks to see if the word dictionary contains the word as hand"""
@@ -171,18 +171,34 @@ class FileReader:
 def main():
 
     inspiring_set_name = input("What is the name of the folder containing the poems: ")
-    letter = input("What letter would you like alliterate: ")
+    type_of_poem = input("What type of poem? R for rhyming or A for alliteration: ")
+
+    if type_of_poem.upper() == "A":
+
+        letter = input("What letter would you like alliterate: ")
+        suffix = None
+
+    elif type_of_poem.upper() == "R":
+
+        suffix = input("What suffix would you like to rhyme?")
+        letter= None
+
+    else:
+
+        print("Error incorrect entry, please restart.")
+    
     number_of_poems = input("How many poems would you like the generate: ")
 
     reader = FileReader(inspiring_set_name)
     reader.open_and_read_file()
     word_dict = reader.get_word_dictionary()
 
-    generate_poem = WritePoems(word_dict, letter)
+    generate_poem = WritePoems(word_dict, letter, suffix, type_of_poem)
 
     all_poems = generate_poem.create_poem(int(number_of_poems))
 
-    file = open("poems/output.txt", "w+")
+    print(all_poems)
+    file = open("poems/output.txt", "w")
     file.write(all_poems)
     
 
