@@ -1,5 +1,4 @@
 """
-Team: FantasticFour (Diego, Richard, Greta, Will)
 Course: CSCI 3725
 Prof. Harmon
 ------------
@@ -163,6 +162,7 @@ class FileReader:
         #print(generate_poem.same_first_letter("The", self.word_dictionary))
 
     def get_word_dictionary(self):
+        
         return self.word_dictionary
         
 
