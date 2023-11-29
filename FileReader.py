@@ -1,17 +1,16 @@
 """
+Author: Greta Farkas
 Course: CSCI 3725
 Prof. Harmon
 ------------
 This class serves to create a fileReader object which is capable
-of retrieving the recipe name from the given relative path, and 
-a list of all the ingredients needed to create that recipe. This 
-class is also capable of creating a dictionary with the recipe name
-as the key, and a list of the ingredients as the value.
+of retrieving the inspiringset name from the given relative path, and 
+reading in the words. This class is also capable of creating a dictionary with the words
+as the key, and words that follow and their frequencies.
 
 Dependencies: glob
 """
 import glob as gl
-import numpy as np
 from writePoems import WritePoems
 
 class FileReader:
@@ -33,8 +32,8 @@ class FileReader:
     def __init__(self, subfolder_name : str) -> None:
         """
         This initializer serves to create the subfolder_name 
-        attribute. This subfolder folder contains all the txt 
-        files to be parsed
+        attribute. This subfolder folder contains all the  
+        poems to be parsed
         ...
         Parameters:
         -----------
@@ -42,24 +41,15 @@ class FileReader:
             folder containing all the txt files to be parsed
         """
         self.subfolder_name = subfolder_name
-        #self.open_and_read_file()
         self.word_dictionary = dict()
        
 
 
     def open_and_read_file(self):
         """
-        this function serves to open all the txt files within a given directory
-        and creates a dictionary with the recipe name as the key, and a list
-        of ingredients (quantity/name) as the value.
-        ...
-        Parameters:
-        ----------
-        None
-        
-        Returns:
-        --------
-        None
+        this function serves to open all the txt and read in the poetry 
+        lines. It then splits the lines and adds the individual words to a
+        dictionary
         """
         
         poems = []
@@ -180,7 +170,7 @@ def main():
 
     elif type_of_poem.upper() == "R":
 
-        suffix = input("What suffix would you like to rhyme?")
+        suffix = input("What suffix would you like to rhyme? ")
         letter= None
 
     else:

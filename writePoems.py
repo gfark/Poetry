@@ -1,46 +1,63 @@
 """
-Team: FantasticFour (Diego, Richard, Greta, Will)
+Author: Greta Farkas
 Course: CSCI 3725
 Prof. Harmon
 ------------
-This class serves to create a fileReader object which is capable
-of retrieving the recipe name from the given relative path, and 
-a list of all the ingredients needed to create that recipe. This 
-class is also capable of creating a dictionary with the recipe name
-as the key, and a list of the ingredients as the value.
+This class generates poems. There are options for an alliteration poem
+and a rhyming poem. It uses the SpeakWords class to out put its poems.
+It uses the frequencies off following words and a probablitity matrix 
+to produce the following words.
 
 Dependencies: glob
 """
 import glob as gl
 import numpy as np
+from speak import SpeakWords
 
 
 class WritePoems:
     """
-    This class serves to provide functionality to read txt files from a given folder
-    and create a dictionary from the parsed data. Such data consists words from poems and a
-    count of what words follow them and how many times they occur
+    This class serves to provide functionality generate the next 
+    word in the poem based on the current word given. It searches
+    the word dictionary for the best matches, as well as construct
+    poetry.
     ...
     Attributes:
     -----------
-    subfolder_name : str
-        folder containing all the txt files to be parsed
     
-        self.word_dictionary : dict 
+
+        word_dictionary : dict 
             a word dictionary with the word that follows and the frequency of it
+
+        start_letter : str
+            used for alliteration poem, the letter to be repeated
+
+        suffix : str
+            used for rhyming poem, the suffix to be rhymed with
+
+        type_of_poem: str
+            A for alliteration, R for rhyming
 
     """
 
     def __init__(self, word_dictionary : dict(), start_letter: str, suffix: str, type_of_poem: str):
         """
-        This initializer serves to create the subfolder_name 
-        attribute. This subfolder folder contains all the txt 
-        files to be parsed
+        This initializer serves to create variables for the attributes of this class.
         ...
         Parameters:
         -----------
-        subfolder_name : str
-            folder containing all the txt files to be parsed
+        word_dictionary : dict 
+            a word dictionary with the word that follows and the frequency of it
+
+        start_letter : str
+            used for alliteration poem, the letter to be repeated
+
+        suffix : str
+            used for rhyming poem, the suffix to be rhymed with
+
+        type_of_poem: str
+            A for alliteration, R for rhymin
+        
         """
         
         self.word_dictionary = word_dictionary
@@ -60,6 +77,9 @@ class WritePoems:
         Parameters:
         start_word: str
             inputted word to start the string
+
+        Returns: 
+            str: a new word 
         """
 
         sw = self.word_dictionary.get(start_word)
@@ -136,6 +156,7 @@ class WritePoems:
 
         #starting word set a the current word
         current_word = starting_word
+        words_per_line = 0
 
         while (word_count <= number_of_words):
 
@@ -151,8 +172,19 @@ class WritePoems:
                 #if theres no value picks another letter with the same word
                 next_word = self.same_first_letter(self.start_letter, self.word_dictionary)
 
+            if not (next_word == "\n"):
+                
+                if (words_per_line == 7):
+                    poem += "\n" + next_word
+                    words_per_line = 1
+
+                else:
+                    poem += " " + next_word
+                    words_per_line += 1
+    
+                
             #adds word to poem wit
-            poem += " " + next_word
+            
 
             #sets the current word to the new word
             current_word = next_word
@@ -305,35 +337,35 @@ class WritePoems:
             a list of the corresponding frequencies
 
         """
+        #initializes lists
         highest_freq = []
         lowest_freq = []
         middle_freq = []
         max = 0
         min = 1
         
-
+        #words that used to be the max and now are not
         needs_placement = []
 
-        print(word_list)
 
         for word in word_list:
 
-
-            print(word)
-
-
+            #checks coordinate for frequency
             if word[1] > max:
                 max = word[1]
 
+                #relocates old high frequency words
                 for i in highest_freq:
                     needs_placement.append(i)
 
                 highest_freq = [word]
 
+            #adds word to max list
             if word[1] == max:
 
                 highest_freq.append(word)
 
+            #adds word to min list
             if word[1] == min:
                 if min <= max:
                     min = word[1]
@@ -410,11 +442,11 @@ class WritePoems:
 
         while(word_count <= number_of_words):
 
-
+            
             if (isinstance(word_dict.get(current_word), dict)):
                 #rhyme on the 3rd or 6th word
                 if rhyme == 3 or rhyme == 6:
-                    print("YES RHYME")
+
                     next_word = self.get_next_word_rhyme(current_word, True)
                     
                     
@@ -433,8 +465,11 @@ class WritePoems:
                 next_word = self.find_rhyme(word_dict, False)
 
            
-            
+            if (isinstance(next_word, list)):
+                new_next = next_word[0]
+                next_word = new_next
             poem += " " + next_word
+
             current_word = next_word
             rhyme += 1
             word_count += 1
@@ -445,7 +480,18 @@ class WritePoems:
 
     def get_next_word_rhyme(self, current_word: str, rhyme: bool) -> str:
         """
-        Gets the next word for a rhyming poem 
+        Finds the next word for a rhyming poem 
+
+        Parameters:
+
+        current_word : str 
+            current word in poem
+        
+        rhyme: bool 
+            True if the suffix should rhyme, False if the suffix shouldn't rhyme
+
+        Return:
+            str -- new word
         """
 
         #gets the current word, frequency word dictionarty from the big word dictionary
@@ -467,7 +513,7 @@ class WritePoems:
                     does_rhymes = self.does_rhyme(stripped_word)
 
                     if (does_rhymes):
-                        rhyming_word_list.append(pairing[0])
+                        rhyming_word_list.append(pairing)
 
              elif(current_word == "\n"):
                   
@@ -494,7 +540,8 @@ class WritePoems:
     
     def does_rhyme(self, word: str) -> bool:
         """
-        gathers rhyming words from the frequency list
+        Recieves a rhyming word from the frequency list and checks to see
+        if the suffix rhymes with the word at hand
         """
 
         word_length = len(word)
@@ -512,6 +559,17 @@ class WritePoems:
 
         
     def find_rhyme(self, word_dict: dict, rhyme: bool) -> str:
+        """
+        Finds a word that rhymes with the suffix from the word dictionary
+
+        Parameters:
+            word_dict : dict 
+                word dictionary
+            
+            rhyme: bool
+                True if the word should rhyme, False if not
+        
+        """
         rhyme_list = []
         all_words = []
         
@@ -530,8 +588,6 @@ class WritePoems:
                 
 
 
-        
-
         #choose a word at random from the list
         if(rhyme):
             index = np.random.randint(number_of_rhyme_words)
@@ -540,7 +596,46 @@ class WritePoems:
             index = np.random.randint(number_of_words)
             return all_words[index]
  
-    
+    def evaluate_alliteration(self, poem: str, letter: str):
+        """
+        evaluates an alliteration poem based on the amount of words
+        that start with the same letter. There is a higher evaluation 
+        if it is repetitive.
+
+        Parameters: 
+            poem: str - string of poems
+        """
+
+        lines = 0
+        double_letter = 0
+        letter_occurances = 0
+        past_word = False
+        score = 0
+
+        for word in poem:
+
+            if word == "\n":
+                lines += 1
+
+            if(word[0].lower() == letter.lower()):
+                if (past_word):
+                    double_letter
+                letter_occurances += 1
+                past_word = True
+            
+            elif (past_word):
+                past_word = False
+                
+        if (letter_occurances > lines) :
+            amount = (letter_occurances - lines) * 3
+            score += amount
+        
+        if (double_letter > 0):
+            score += (double_letter * 5)
+        return score
+
+   
+
     def create_poem(self, number_of_poems) -> str:
         """
         this function is the driver function to generate a number of poems
@@ -559,39 +654,32 @@ class WritePoems:
         poem_count = 1
         while( poem_count <= number_of_poems ):
 
+            speak = SpeakWords()
             full_string += "\nPOEM " + str(poem_count)+ ": \n"
 
             if self.type_of_poem.upper() == "A":
-                poem = self.generate_alliteration_poem(self.word_dictionary, 25)
+                poem = self.generate_alliteration_poem(self.word_dictionary, 56)
+                
+                score = self.evaluate_alliteration(poem, self.start_letter)
             
             if self.type_of_poem.upper() == "R":
                 poem = self.generate_rhyming_poem(self.word_dictionary, 25, self.suffix)
+                
 
             full_string += poem + "\n"
 
+            
+            if  self.type_of_poem.upper() == "A":
+                    poem += "\nEvaluation: " + str(score)
+
+            speak.speak(poem)
             poem_count += 1
 
         return full_string
             
+                                                                                                                    
 
 
-
-                                                                                                                                
-
-
-
-def main():
-    r = WritePoems()
-    r.remove_punctuation("ww....")
-
-
-
-
-
-
-
-if __name__ == "__main__":
-    main()
             
             
 
